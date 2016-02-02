@@ -1,0 +1,1 @@
+co.threest.quiz.controller.RegistrationController
