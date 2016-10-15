@@ -2,11 +2,11 @@ package com.online.quiz;
 
 public class QuizQuestion {
 
-    int questionNumber;
-    String question;
-    String questionOptions[];
-    int correctOptionIndex;
-    int userSelected = -1;
+    private int questionNumber;
+    private String question;
+    private String questionOptions[];
+    private int correctOptionIndex;
+    private int userSelected = -1;
 
     //Status of Current Question
     public int getUserSelected() {
@@ -33,11 +33,11 @@ public class QuizQuestion {
         questionNumber = i;
     }
 
-    public int getCorrectOptionIndex() {
+    int getCorrectOptionIndex() {
         return correctOptionIndex;
     }
 
-    public String[] getQuestionOptions() {
+    private String[] getQuestionOptions() {
         return questionOptions;
     }
 

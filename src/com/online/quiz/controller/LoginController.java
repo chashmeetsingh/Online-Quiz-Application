@@ -1,10 +1,7 @@
 package com.online.quiz.controller;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -29,7 +26,6 @@ public class LoginController extends HttpServlet {
      */
     public LoginController() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -53,13 +49,13 @@ public class LoginController extends HttpServlet {
         ResultSet set = null;
         int i = 0;
         try {
-            Statement st = con.createStatement();
-
-            //Searching for user in DB
-            String sql = "Select * from  users where username='" + username + "' and password='" + password + "' ";
+            // Use PreparedStatement to avoid sql injections
+            PreparedStatement st = con.prepareStatement("Select * from  users where username=? and password=?");
+            st.setString(1, username);
+            st.setString(2, password);
 
             //executing query
-            set = st.executeQuery(sql);
+            set = st.executeQuery();
             String id = null;
             while (set.next()) {
                 id = set.getString("id");

@@ -29,7 +29,6 @@ public class ReviewController extends HttpServlet {
      */
     public ReviewController() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -37,7 +36,6 @@ public class ReviewController extends HttpServlet {
      * response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	// TODO Auto-generated method stub
 
         Exam exam = (Exam) request.getSession().getAttribute("currentExam");
 
@@ -49,7 +47,6 @@ public class ReviewController extends HttpServlet {
 
         //Displaying Answers
         for (int i = 0; i < exam.getTotalNumberOfQuestions(); i++) {
-            int number = i;
             String options[] = new String[4];
             String question = null;
             int correct = 0;
@@ -73,23 +70,16 @@ public class ReviewController extends HttpServlet {
             }
 
             QuizQuestion q = new QuizQuestion();
-            q.setQuestionNumber(number);
+            q.setQuestionNumber(i);
             q.setQuestion(question);
             q.setCorrectOptionIndex(correct);
             q.setQuestionOptions(options);
             q.setUserSelected(exam.getUserSelectionForQuestion(i));
-            reviewQuestionList.add(number, q);
+            reviewQuestionList.add(i, q);
         }
         request.setAttribute("reviewQuestions", reviewQuestionList);
         request.getRequestDispatcher("/WEB-INF/jsps/examReview2.jsp").forward(request, response);
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     * response)
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
-    }
 
 }

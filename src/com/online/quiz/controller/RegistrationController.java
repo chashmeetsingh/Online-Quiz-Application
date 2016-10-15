@@ -1,9 +1,6 @@
 package com.online.quiz.controller;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.online.quiz.DatabaseConnectionFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,9 +8,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.online.quiz.DatabaseConnectionFactory;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Servlet implementation class RegistrationController
@@ -28,14 +27,12 @@ public class RegistrationController extends HttpServlet {
      */
     public RegistrationController() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String password_cofirm = request.getParameter("confirm_password");
         String fullName = request.getParameter("fullName");
         String security = request.getParameter("security_ques");
         String answer = request.getParameter("answer");
@@ -43,10 +40,9 @@ public class RegistrationController extends HttpServlet {
         Connection con = DatabaseConnectionFactory.createConnection();
         int check = 0;
         try {
-            Statement st1 = con.createStatement();
-            String sql1 = "SELECT * FROM users where email='" + email + "';";
-
-            ResultSet rs1 = st1.executeQuery(sql1);
+            PreparedStatement st1 = con.prepareStatement("SELECT * FROM users where email=?");
+            st1.setString(1, email);
+            ResultSet rs1 = st1.executeQuery();
 
             while (rs1.next()) {
                 check = 1;
@@ -57,10 +53,9 @@ public class RegistrationController extends HttpServlet {
         }
         request.setAttribute("checker", "none");
         try {
-            Statement st2 = con.createStatement();
-            String sql2 = "SELECT * FROM users where username='" + username + "';";
-
-            ResultSet rs2 = st2.executeQuery(sql2);
+            PreparedStatement st2 = con.prepareStatement("SELECT * FROM users where username=?");
+            st2.setString(1, username);
+            ResultSet rs2 = st2.executeQuery();
 
             while (rs2.next()) {
                 check = 2;
@@ -81,11 +76,14 @@ public class RegistrationController extends HttpServlet {
             dispatcher.forward(request, response);
         } else {
             try {
-                Statement st = con.createStatement();
-                String sql = "INSERT INTO users values ('','" + email + "','" + username + "','" + password + "','" + fullName + "','"
-                        + security + "','" + answer + "')";
-                System.out.println(sql);
-                st.executeUpdate(sql);
+                PreparedStatement st = con.prepareStatement("INSERT INTO users values ('',? , ?, ?, ?, ?, ?)");
+                st.setString(1, email);
+                st.setString(2, username);
+                st.setString(3, password);
+                st.setString(4, fullName);
+                st.setString(5, security);
+                st.setString(6, answer);
+                st.executeUpdate();
             } catch (SQLException sqe) {
                 sqe.printStackTrace();
             }

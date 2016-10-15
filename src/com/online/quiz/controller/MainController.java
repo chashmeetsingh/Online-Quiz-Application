@@ -1,11 +1,9 @@
 package com.online.quiz.controller;
 
-import java.io.IOException;
+import com.online.quiz.CreateDOM;
+import com.online.quiz.DatabaseConnectionFactory;
 import org.json.JSONObject;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import org.w3c.dom.Document;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,11 +11,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.w3c.dom.Document;
-
-import com.online.quiz.CreateDOM;
-import com.online.quiz.DatabaseConnectionFactory;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Main Controller Class
@@ -27,21 +26,19 @@ import com.online.quiz.DatabaseConnectionFactory;
 public class MainController extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    ArrayList<JSONObject> array;
-    ResultSet rs;
-    Integer count = 0;
 
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
 
         String applicationContextPath = request.getContextPath();
+        List<JSONObject> array = null;
 
         Connection con = DatabaseConnectionFactory.createConnection();
         try {
             Statement st = con.createStatement();
             String count_query = "SELECT DISTINCT id,title FROM exams;";
-            rs = st.executeQuery(count_query);
-            array = new ArrayList<JSONObject>();
+            ResultSet rs = st.executeQuery(count_query);
+            array = new ArrayList<>();
 
             while (true) {
                 if (rs.next()) {
@@ -105,9 +102,8 @@ public class MainController extends HttpServlet {
             } else {
                 RequestDispatcher dispatcher = request
                         .getRequestDispatcher("/WEB-INF/jsps/quizDetails.jsp");
-                Document document = null;
                 try {
-                    document = CreateDOM.getDOM(exam, id);
+                    Document document = CreateDOM.getDOM(exam, id);
 
                     request.getSession().setAttribute("totalNumberOfQuizQuestions", document.getElementsByTagName("totalquizquestions").item(0).getTextContent());
                     request.getSession().setAttribute("quizDuration", document.getElementsByTagName("quizduration").item(0).getTextContent());

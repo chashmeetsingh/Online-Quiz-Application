@@ -1,21 +1,5 @@
 package com.online.quiz;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +7,15 @@ import org.json.XML;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import jdk.nashorn.internal.parser.Scanner;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /*
  * CreateDOM
@@ -43,11 +35,10 @@ public class CreateDOM {
         JSONObject newJson = new JSONObject();
         try {
             ResultSet rs;
-            Statement st = con.createStatement();
+            PreparedStatement st = con.prepareStatement("SELECT * FROM  EXAMS WHERE id=?");
+            st.setString(1, id);
             //Getting all exams Questions
-            String sql = "SELECT * FROM  EXAMS WHERE id=" + id;
-            System.out.println(sql);
-            rs = st.executeQuery(sql);
+            rs = st.executeQuery();
             String title = null;
             int count = 0;
             while (rs.next()) {
@@ -63,8 +54,8 @@ public class CreateDOM {
             //Setting Quiz Duration
             newJson.put("quizduration", 30);
 
-            //Executing Query
-            rs = st.executeQuery(sql);
+            // Reset ResultSet to avoid re-executing an already executed query
+            rs.beforeFirst();
             JSONArray questionObject = new JSONArray();
             while (rs.next()) {
                 //adding questions to An Questions Array
@@ -116,6 +107,7 @@ public class CreateDOM {
             }
             in.close();
         } catch (IOException e) {
+            // Maybe we should throw an exception and exit here if it fails ?
         }
 
         quizFile = new File(path);
@@ -124,10 +116,11 @@ public class CreateDOM {
         DocumentBuilder db = dbf.newDocumentBuilder();
         try {
             dom = db.parse(quizFile);
+            dom.getDocumentElement().normalize();
         } catch (FileNotFoundException fileNotFound) {
             System.out.println("Error : Quiz File Not Found " + fileNotFound);
         }
-        dom.getDocumentElement().normalize();
+
         return dom;
     }
 

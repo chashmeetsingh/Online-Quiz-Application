@@ -1,9 +1,7 @@
 package com.online.quiz.controller;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
+import com.online.quiz.Exam;
+import com.online.quiz.QuizQuestion;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.online.quiz.Exam;
-import com.online.quiz.QuizQuestion;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Servlet implementation class ExamController
@@ -24,13 +22,11 @@ public class ExamController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub		
         doPost(request, response);
 
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	// TODO Auto-generated method stub
 
         //Initializing Exam not Finished
         String finish = "0";
@@ -108,7 +104,7 @@ public class ExamController extends HttpServlet {
          * Current Question
          */
         String radio = request.getParameter("answer");
-        int selectedRadio = -1;
+        int selectedRadio;
 
         //Initialising for getting marked Answers
         int cnt = 0;
@@ -116,7 +112,7 @@ public class ExamController extends HttpServlet {
         //Get Selected Question from Left Scrollable
         String link = request.getParameter("link");
         if (link != null && !link.isEmpty()) {
-            exam.currentQuestion = Integer.parseInt(request.getParameter("link").toString());
+            exam.currentQuestion = Integer.parseInt(request.getParameter("link"));
             System.out.println("inlink" + exam.currentQuestion);
             System.out.println(exam.currentQuestion);
             exam.setQuestion(exam.currentQuestion -= 1);
@@ -125,42 +121,50 @@ public class ExamController extends HttpServlet {
         }
 
         //Perform Actions When Answer Submitted
-        if ("1".equals(radio)) {
-            selectedRadio = 1;
-            //Setting Answered
-            exam.setAnswered(exam.currentQuestion);
+        switch (radio) {
+            case "1":
+                selectedRadio = 1;
+                //Setting Answered
+                exam.setAnswered(exam.currentQuestion);
 
-            //Setting option Selected
-            exam.selections.put(exam.currentQuestion, selectedRadio);
-            exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
-        } else if ("2".equals(radio)) {
-            System.out.println("I am in 2");
-            selectedRadio = 2;
-            //Setting Answered
-            exam.setAnswered(exam.currentQuestion);
+                //Setting option Selected
+                exam.selections.put(exam.currentQuestion, selectedRadio);
+                exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
+                break;
+            case "2":
+                System.out.println("I am in 2");
+                selectedRadio = 2;
+                //Setting Answered
+                exam.setAnswered(exam.currentQuestion);
 
-            //Setting option Selected
-            exam.selections.put(exam.currentQuestion, selectedRadio);
-            exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
-        } else if ("3".equals(radio)) {
-            System.out.println("I am in 3");
-            selectedRadio = 3;
-            //Setting Answered
-            exam.setAnswered(exam.currentQuestion);
+                //Setting option Selected
+                exam.selections.put(exam.currentQuestion, selectedRadio);
+                exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
+                break;
+            case "3":
+                System.out.println("I am in 3");
+                selectedRadio = 3;
+                //Setting Answered
+                exam.setAnswered(exam.currentQuestion);
 
-            //Setting option Selected
-            exam.selections.put(exam.currentQuestion, selectedRadio);
-            exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
-        } else if ("4".equals(radio)) {
-            System.out.println("I am in 4");
-            selectedRadio = 4;
-            //Setting Answered
-            exam.setAnswered(exam.currentQuestion);
+                //Setting option Selected
+                exam.selections.put(exam.currentQuestion, selectedRadio);
+                exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
+                break;
+            case "4":
+                System.out.println("I am in 4");
+                selectedRadio = 4;
+                //Setting Answered
+                exam.setAnswered(exam.currentQuestion);
 
-            //Setting option Selected
-            exam.selections.put(exam.currentQuestion, selectedRadio);
-            exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
+                //Setting option Selected
+                exam.selections.put(exam.currentQuestion, selectedRadio);
+                exam.questionList.get(exam.currentQuestion).setUserSelected(selectedRadio);
+                break;
+            default:
+                System.out.printf("Got an unknown radio value: "+ radio);
         }
+
 
         //Clearing Current Option
         if ("clear".equals(request.getParameter("clear"))) {
@@ -171,7 +175,7 @@ public class ExamController extends HttpServlet {
 
         //Gathering Count for all answers Questions
         for (int i = 0; i < exam.getAnswerList().size(); i++) {
-            if (exam.getAnswerList().get(i) != "-1") {
+            if (!"-1".equals(exam.getAnswerList().get(i))) {
                 cnt++;
             }
         }
@@ -223,7 +227,7 @@ public class ExamController extends HttpServlet {
         //Getting all marked Questions
         int marked = 0;
         for (int i = 0; i < exam.getMarkedList().size(); i++) {
-            if (exam.getMark(i) == "0") {
+            if ("0".equals(exam.getMark(i))) {
                 marked++;
             }
         }
@@ -233,7 +237,7 @@ public class ExamController extends HttpServlet {
         request.getSession().setAttribute("selectedoption", exam.getSelections().get(exam.currentQuestion));
 
         //Checking if exam submitted	
-        if (finish != "1") {
+        if (!"1".equals(finish)) {
             System.out.println(request);
             System.out.println(response);
             request.getRequestDispatcher("/WEB-INF/jsps/exam.jsp").forward(request, response);
