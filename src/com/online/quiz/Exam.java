@@ -1,19 +1,18 @@
 package com.online.quiz;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.*;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.json.JSONException;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.online.quiz.CreateDOM;
-import com.online.quiz.CreateDOM;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Exam Class
@@ -28,21 +27,15 @@ import com.online.quiz.CreateDOM;
  */
 public class Exam {
 
-    Document dom;
+    private Document dom;
     public int currentQuestion = 0;
-    public int totalNumberOfQuestions = 0;
-    public int quizDuration = 0;
-    String testName;
-    ArrayList<String> answered = new ArrayList<String>();
-    ArrayList<String> marked = new ArrayList<String>();
+    private int totalNumberOfQuestions = 0;
+    private String testName;
+    private ArrayList<String> answered = new ArrayList<>();
+    private ArrayList<String> marked = new ArrayList<>();
 
-    public List<Integer> quizSelectionsList = new ArrayList<Integer>();
 
-    public List<Integer> getQuizSelectionsList() {
-        return quizSelectionsList;
-    }
-
-    public Map<Integer, Integer> selections = new LinkedHashMap<Integer, Integer>();
+    public Map<Integer, Integer> selections = new LinkedHashMap<>();
 
     public ArrayList<QuizQuestion> questionList;
 
@@ -61,7 +54,7 @@ public class Exam {
             answered.add("-1");
             marked.add("-1");
         }
-        questionList = new ArrayList<QuizQuestion>(totalNumberOfQuestions);
+        questionList = new ArrayList<>(totalNumberOfQuestions);
         System.out.println("number" + totalNumberOfQuestions);
     }
 
@@ -76,14 +69,13 @@ public class Exam {
     }
 
     // Setting Questions For Current Exam
-    public void setQuestion(int i) {
-        int number = i;
+    public void setQuestion(int questionNumber) {
         String options[] = new String[4];
         String question = null;
         int correct = 0;
 
         NodeList qList = dom.getElementsByTagName("question");
-        NodeList childList = qList.item(i).getChildNodes();
+        NodeList childList = qList.item(questionNumber).getChildNodes();
 
         int counter = 0;
 
@@ -102,22 +94,17 @@ public class Exam {
         }
 
         QuizQuestion q = new QuizQuestion();
-        q.setQuestionNumber(number);
+        q.setQuestionNumber(questionNumber);
         q.setQuestion(question);
         q.setCorrectOptionIndex(correct);
         q.setQuestionOptions(options);
 
         while (questionList.size() != getTotalNumberOfQuestions()) {
-            questionList.add(number, q);
+            questionList.add(questionNumber, q);
         }
         
-        questionList.set(number, q);
+        questionList.set(questionNumber, q);
 
-    }
-
-    //Getting Questions List
-    public ArrayList<QuizQuestion> getQuestionList() {
-        return this.questionList;
     }
 
     //Getting User Selections List
@@ -169,14 +156,14 @@ public class Exam {
     public int calculateResult(Exam exam, int taken) {
         int totalCorrect = 0;
         Map<Integer, Integer> userSelectionsMap = exam.selections;
-        List<Integer> userSelectionsList = new ArrayList<Integer>();
+        List<Integer> userSelectionsList = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : userSelectionsMap.entrySet()) {
             userSelectionsList.add(entry.getValue());
         }
 
         List<QuizQuestion> questionList = exam.questionList;
 
-        List<Integer> correctAnswersList = new ArrayList<Integer>();
+        List<Integer> correctAnswersList = new ArrayList<>();
         for (QuizQuestion question : questionList) {
             correctAnswersList.add(question.getCorrectOptionIndex());
         }
@@ -194,8 +181,7 @@ public class Exam {
 
     public int getUserSelectionForQuestion(int i) {
         Map<Integer, Integer> map = getSelections();
-
-        return (Integer) map.get(i);
+        return map.get(i);
     }
 
     //getting total No. Of Questions
